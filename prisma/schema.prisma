@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+/// 用户角色
+model Role {
+  id        String          @id @default(cuid())
+  name      String // 角色名称
+  perm      String // 权限字符
+  route     String? // 默认路由
+  status    AvailableStatus @default(normal)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  Account   Account[]
+}
+
+/// 用户，后台、app、小程序，统一模型
+model Account {
+  id                      String                    @id @default(cuid())
+  roleId                  String
+  status                  AvailableStatus           @default(normal)
+  name                    String
+  phone                   String                    @unique
+  username                String                    @unique
+  password                String
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  role                    Role                      @relation(fields: [roleId], references: [id], onDelete: Cascade)
+}
+
+/// 系统字典
+model SysDict {
+  id        Int             @id @default(autoincrement())
+  category  SysDictCategory @default(select)
+  name      String
+  type      String          @unique
+  remark    String?
+  status    AvailableStatus @default(normal) /// 当前状态
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+/// 系统字典数据
+model SysDictData {
+  id        Int             @id @default(autoincrement())
+  sort      Float?
+  label     String
+  value     String
+  type      String
+  remark    String?
+  extra     Json? /// 扩展信息，对于有些数据，可以配置支持的扩展
+  status    AvailableStatus @default(normal) /// 当前状态
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+/// 可用状态
+enum AvailableStatus {
+  normal /// 正常
+  forbidden /// 禁用
+}
+
+enum SysDictCategory {
+  radio
+  select
+}
