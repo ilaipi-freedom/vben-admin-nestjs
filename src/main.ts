@@ -14,7 +14,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   const config = new DocumentBuilder()
-    .setTitle('打码挂机 API')
+    .setTitle('Vben Admin Backend API')
     .setDescription('全新开发，Admin 接口')
     .setVersion('1.0')
     .addBearerAuth()

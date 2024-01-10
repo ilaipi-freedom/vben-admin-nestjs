@@ -1,9 +1,9 @@
 {
-  "name": "hongmu-backend",
+  "name": "vben-admin-nestjs",
   "version": "0.0.1",
-  "description": "甘肃泓牧科技 仓储业务管理系统 后端",
-  "author": "",
-  "private": true,
+  "description": "针对vben-admin自带的权限管理，开发基于nestjs的后端实现",
+  "author": "ilaipi",
+  "private": false,
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
