@@ -5,9 +5,7 @@ export class AuthSessionKey {
 }
 
 export class AuthSession {
-  id: string | number;
+  id: string;
   type: string;
-  username: string;
-  token: string;
   role: string;
 }

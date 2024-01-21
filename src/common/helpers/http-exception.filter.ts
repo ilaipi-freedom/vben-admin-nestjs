@@ -22,11 +22,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const message =
       exception instanceof HttpException
         ? exception.message
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+        : '系统异常，请稍后重试，或联系管理员';
     this.logger.warn(exception, '系统异常');
     response.status(status).json({
       code: status,
-      message: message,
+      message,
       path: request.url,
     });
   }

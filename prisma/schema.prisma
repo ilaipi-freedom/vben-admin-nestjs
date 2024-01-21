@@ -9,16 +9,17 @@ datasource db {
 
 /// 用户角色
 model Role {
-  id        String          @id @default(cuid())
-  name      String // 角色名称
-  perm      String          @unique() // 权限字符 唯一
-  sort      Float?
-  route     String? // 默认路由
-  status    AvailableStatus @default(normal)
-  remark    String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @default(now()) @updatedAt
-  Account   Account[]
+  id             String           @id @default(cuid())
+  name           String // 角色名称
+  perm           String           @unique() // 权限字符 唯一
+  sort           Float?
+  route          String? // 默认路由
+  status         AvailableStatus  @default(normal)
+  remark         String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @default(now()) @updatedAt
+  Account        Account[]
+  RoleMenuConfig RoleMenuConfig[]
 }
 
 /// 部门
@@ -58,19 +59,36 @@ model Account {
 /// 菜单
 model SysMenu {
   id           String          @id @default(cuid())
-  component    String
+  component    String?
   icon         String?
-  menuName     String
+  menuName     String?
   orderNo      Float?
   permission   String?
   parentMenuId String?
+  routePath    String?
+  keepalive    String? /// 是否缓存
+  show         String? /// 是否显示
+  isExt        String? /// 是否外链
   status       AvailableStatus @default(normal)
   type         SysMenuType
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @default(now()) @updatedAt
 
-  parentMenu SysMenu?  @relation("SysMenu_parent_SysMenu", fields: [parentMenuId], references: [id], onDelete: Cascade)
-  children   SysMenu[] @relation("SysMenu_parent_SysMenu")
+  parentMenu     SysMenu?         @relation("SysMenu_parent_SysMenu", fields: [parentMenuId], references: [id], onDelete: Cascade)
+  children       SysMenu[]        @relation("SysMenu_parent_SysMenu")
+  RoleMenuConfig RoleMenuConfig[]
+}
+
+/// 角色菜单配置
+model RoleMenuConfig {
+  id        Int      @id @default(autoincrement())
+  roleId    String
+  sysMenuId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  role    Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  sysMenu SysMenu @relation(fields: [sysMenuId], references: [id], onDelete: Cascade)
 }
 
 /// 系统字典

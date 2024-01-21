@@ -7,7 +7,7 @@ import { AppModule, bootstrap as runtimeBootstrap } from './common/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const apiPrefix = 'dmgjapi';
+  const apiPrefix = 'vbenapi';
   app.setGlobalPrefix(apiPrefix);
   const logger = app.get(Logger);
   app.useLogger(logger);

@@ -1,11 +1,15 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
-import { Logger } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthHelper } from '../helpers/auth-helper';
@@ -54,14 +58,12 @@ export class AuthService {
     const sessionParam = {
       id: account.id,
       type,
-      username: account.username,
-      token,
-      role: account.role.perm,
+      role: account.role?.perm,
     };
     await this.cacheManager.set(sessionKey, JSON.stringify(sessionParam), 0);
     return {
       id: account.id,
-      role: account.role.perm,
+      role: account.role?.perm,
       token,
     };
   }
