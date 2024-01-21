@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, SysMenu } from '@prisma/client';
 import { groupBy } from 'lodash';
+import { fmtBy } from 'src/common/helpers/date-helper';
 
 import { PrismaService } from 'src/common/prisma/prisma.service';
 
@@ -24,6 +25,7 @@ export class SysMenuService {
         return {
           ...row,
           ...base,
+          createdAt: fmtBy(row.createdAt, 'yyyy-MM-dd HH:mm'),
         };
       }
       return {

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AvailableStatus, Prisma, Role } from '@prisma/client';
-import { fmtBy } from 'src/common/helpers/date-helper';
 
+import { fmtBy } from 'src/common/helpers/date-helper';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 
 @Injectable()
@@ -9,7 +9,14 @@ export class RoleService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: Prisma.RoleCreateInput) {
-    return this.prisma.role.create({ data });
+    const { menu, ...others } = JSON.parse(JSON.stringify(data));
+    const role = await this.prisma.role.create({ data: others });
+    if (menu?.length) {
+      await this.prisma.roleMenuConfig.createMany({
+        data: menu.map((sysMenuId: string) => ({ sysMenuId, roleId: role.id })),
+      });
+    }
+    return role;
   }
 
   async remove(id: string) {
@@ -17,9 +24,20 @@ export class RoleService {
   }
 
   async update(id: string, data: Prisma.RoleCreateInput) {
-    return this.prisma.role.update({
-      where: { id },
-      data,
+    const { menu, ...others } = JSON.parse(JSON.stringify(data));
+    return await this.prisma.$transaction(async (prisma: PrismaService) => {
+      await prisma.roleMenuConfig.deleteMany({
+        where: {
+          roleId: id,
+        },
+      });
+      await prisma.roleMenuConfig.createMany({
+        data: menu.map((sysMenuId: string) => ({ sysMenuId, roleId: id })),
+      });
+      return prisma.role.update({
+        where: { id },
+        data: others,
+      });
     });
   }
   async list(q: string, status: AvailableStatus, page = 1, limit = 30) {
