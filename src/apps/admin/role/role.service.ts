@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { AvailableStatus, Prisma } from '@prisma/client';
+import { AvailableStatus, Prisma, Role } from '@prisma/client';
+import { fmtBy } from 'src/common/helpers/date-helper';
 
 import { PrismaService } from 'src/common/prisma/prisma.service';
 
@@ -35,7 +36,13 @@ export class RoleService {
       skip: (page - 1) * limit,
       take: Number(limit),
     });
-    return { total, list };
+    return {
+      total,
+      list: list.map((row: Role) => ({
+        ...row,
+        createdAt: fmtBy(row.createdAt, 'yyyy-MM-dd HH:mm'),
+      })),
+    };
   }
 
   async getById(id: string) {

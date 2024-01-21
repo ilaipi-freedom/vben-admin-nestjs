@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 
 import { SysMenuService } from './sys-menu.service';
 import { Public } from 'src/common/helpers/public';
@@ -10,8 +10,8 @@ export class SysMenuController {
 
   @Public()
   @Get()
-  async list() {
-    return this.service.list();
+  async list(@Query('mode') mode: string) {
+    return this.service.list(mode);
   }
 
   @Public()
