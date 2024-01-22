@@ -19,7 +19,7 @@ export class DeptService {
   async update(id: string, data: Prisma.DeptCreateInput) {
     return this.prisma.dept.update({
       where: { id },
-      data,
+      data: { ...data, sort: Number(data.sort) },
     });
   }
   async list(q: string, status: AvailableStatus, page = 1, limit = 30) {
