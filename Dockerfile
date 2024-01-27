@@ -4,6 +4,8 @@ WORKDIR /app
 
 FROM base as prod
 
+RUN apk add tzdata
+
 COPY package*.json ./
 
 RUN npm install --omit=dev
@@ -23,6 +25,8 @@ RUN npm run build
 
 FROM base as release
 
+COPY --from=prod /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo "Asia/Shanghai" > /etc/timezone
 COPY --from=prod /app/node_modules /app/node_modules/
 COPY --from=build /app/node_modules/.prisma/ /app/node_modules/.prisma/
 COPY package.json ./
