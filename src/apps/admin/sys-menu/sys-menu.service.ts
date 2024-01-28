@@ -36,18 +36,19 @@ export class SysMenuService {
           title: row.menuName,
         },
         component: row.component,
+        redirect: row.redirect,
         ...base,
       };
     });
   }
 
-  async list(mode: string) {
+  async list(mode: string, show: string) {
     const list = await this.prisma.sysMenu.findMany({
-      where: { parentMenuId: null },
+      where: { parentMenuId: null, ...(show ? { show } : {}) },
       orderBy: { orderNo: 'asc' },
     });
     const others = await this.prisma.sysMenu.findMany({
-      where: { parentMenuId: { not: null } },
+      where: { parentMenuId: { not: null }, ...(show ? { show } : {}) },
       orderBy: { orderNo: 'asc' },
     });
     const otherGroups = groupBy(others, 'parentMenuId');
@@ -57,6 +58,13 @@ export class SysMenuService {
   async create(data: Prisma.SysMenuCreateInput) {
     return this.prisma.sysMenu.create({
       data,
+    });
+  }
+
+  async update(id: string, data: Prisma.SysMenuUpdateInput) {
+    return this.prisma.sysMenu.update({
+      where: { id },
+      data: { ...data, orderNo: Number(data.orderNo) },
     });
   }
 }

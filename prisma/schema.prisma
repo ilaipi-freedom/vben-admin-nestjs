@@ -69,6 +69,7 @@ model SysMenu {
   keepalive    String? /// 是否缓存
   show         String? /// 是否显示
   isExt        String? /// 是否外链
+  redirect     String? /// 比如 /dashboard 需要配置跳转到 /dashboard/analysis
   status       AvailableStatus @default(normal)
   type         SysMenuType
   createdAt    DateTime        @default(now())
