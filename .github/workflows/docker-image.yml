@@ -46,8 +46,9 @@ jobs:
         script: |
           docker pull ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_HUB_SPACE }}/${{ vars.DOCKER_IMAGE_NAME }}
 
-          docker rm -f ${{ vars.DOCKER_CONTAINER_NAME }}
+          docker rm -f ${{ vars.DOCKER_CONTAINER_NAME }}_admin || true
 
           docker run -dit --network freedom --restart always \
-            --name ${{ vars.DOCKER_CONTAINER_NAME }} --env-file /home/billy/vbendemo/demo.env \
+            -v /home/billy/vbendemo/logs/admin:/data/log \
+            --name ${{ vars.DOCKER_CONTAINER_NAME }}_admin --env-file /home/billy/vbendemo/demo.env \
             ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_HUB_SPACE }}/${{ vars.DOCKER_IMAGE_NAME }}
