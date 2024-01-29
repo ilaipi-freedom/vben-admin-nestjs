@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, SysMenu } from '@prisma/client';
+import { Prisma, SysMenu, SysMenuType } from '@prisma/client';
 import { groupBy } from 'lodash';
 import { fmtBy } from 'src/common/helpers/date-helper';
 
 import { PrismaService } from 'src/common/prisma/prisma.service';
+import { AuthSession } from 'src/types/auth';
+import { AccountService } from '../account/account.service';
 
 @Injectable()
 export class SysMenuService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly accountService: AccountService,
+  ) {}
 
   buildTree(
     mode: string,
@@ -42,17 +47,43 @@ export class SysMenuService {
     });
   }
 
-  async list(mode: string, show: string) {
+  /**
+   * 用户登录后，获取有权限的菜单，不包含按钮
+   */
+  async permList(user: AuthSession) {
+    const permCodes = await this.accountService.getPermCode(user);
     const list = await this.prisma.sysMenu.findMany({
-      where: { parentMenuId: null, ...(show ? { show } : {}) },
+      where: { parentMenuId: null, show: '0' },
       orderBy: { orderNo: 'asc' },
     });
     const others = await this.prisma.sysMenu.findMany({
-      where: { parentMenuId: { not: null }, ...(show ? { show } : {}) },
+      where: {
+        parentMenuId: { not: null },
+        permission: { in: permCodes },
+        type: { not: SysMenuType.btn },
+      },
       orderBy: { orderNo: 'asc' },
     });
     const otherGroups = groupBy(others, 'parentMenuId');
-    return this.buildTree(mode, list, otherGroups);
+    return this.buildTree('perm', list, otherGroups);
+  }
+
+  /**
+   * 权限管理、菜单管理 获取权限树 时调用
+   */
+  async list() {
+    const list = await this.prisma.sysMenu.findMany({
+      where: { parentMenuId: null },
+      orderBy: { orderNo: 'asc' },
+    });
+    const others = await this.prisma.sysMenu.findMany({
+      where: {
+        parentMenuId: { not: null },
+      },
+      orderBy: { orderNo: 'asc' },
+    });
+    const otherGroups = groupBy(others, 'parentMenuId');
+    return this.buildTree('origin', list, otherGroups);
   }
 
   async create(data: Prisma.SysMenuCreateInput) {

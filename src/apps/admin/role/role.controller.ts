@@ -62,6 +62,12 @@ export class RoleController {
     description: '状态',
   })
   @ApiQuery({
+    name: 'isAll',
+    required: false,
+    type: Boolean,
+    description: '是否全部',
+  })
+  @ApiQuery({
     name: 'page',
     required: false,
     type: Number,
@@ -76,10 +82,11 @@ export class RoleController {
   async list(
     @Query('q') q: string,
     @Query('status') status: AvailableStatus,
+    @Query('isAll') isAll: boolean,
     @Query('current') page = 1,
     @Query('pageSize') limit = 30,
   ) {
-    return this.roleService.list(q, status, page, limit);
+    return this.roleService.list(q, status, isAll, page, limit);
   }
   @Delete()
   @ApiOperation({

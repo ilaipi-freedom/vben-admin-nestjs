@@ -63,7 +63,7 @@ model SysMenu {
   icon         String?
   menuName     String?
   orderNo      Float?
-  permission   String?
+  permission   String?         @unique
   parentMenuId String?
   routePath    String?
   keepalive    String? /// 是否缓存
@@ -82,14 +82,14 @@ model SysMenu {
 
 /// 角色菜单配置
 model RoleMenuConfig {
-  id        Int      @id @default(autoincrement())
-  roleId    String
-  sysMenuId String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  id          Int      @id @default(autoincrement())
+  roleId      String
+  sysMenuPerm String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   role    Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  sysMenu SysMenu @relation(fields: [sysMenuId], references: [id], onDelete: Cascade)
+  sysMenu SysMenu @relation(fields: [sysMenuPerm], references: [permission], onDelete: Cascade)
 }
 
 /// 系统字典

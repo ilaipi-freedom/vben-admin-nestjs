@@ -1,21 +1,26 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 
 import { SysMenuService } from './sys-menu.service';
-import { Public } from 'src/common/helpers/public';
-import { Prisma } from '@prisma/client';
-import { ApiBody, ApiParam } from '@nestjs/swagger';
+import { CurrentUser } from 'src/common/helpers/current-user';
+import { AuthSession } from 'src/types/auth';
 
 @Controller('sys-menu')
+@ApiBearerAuth()
 export class SysMenuController {
   constructor(private readonly service: SysMenuService) {}
 
-  @Public()
-  @Get()
-  async list(@Query('mode') mode: string, @Query('show') show: string) {
-    return this.service.list(mode, show);
+  @Get('/perm')
+  async permList(@CurrentUser() user: AuthSession) {
+    return this.service.permList(user);
   }
 
-  @Public()
+  @Get()
+  async list() {
+    return this.service.list();
+  }
+
   @Post()
   async create(@Body() payload: Prisma.SysMenuCreateInput) {
     return this.service.create(payload);

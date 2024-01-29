@@ -51,7 +51,7 @@ export class AccountService {
       where: {
         roleId: account.roleId,
         sysMenu: {
-          type: SysMenuType.btn,
+          type: { not: SysMenuType.dir },
         },
       },
       include: {

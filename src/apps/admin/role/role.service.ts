@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AvailableStatus, Prisma, Role } from '@prisma/client';
 
 import { fmtBy } from 'src/common/helpers/date-helper';
+import { pageOptions } from 'src/common/helpers/page-helper';
 import { PrismaService } from 'src/common/prisma/prisma.service';
 
 @Injectable()
@@ -42,7 +43,13 @@ export class RoleService {
       });
     });
   }
-  async list(q: string, status: AvailableStatus, page = 1, limit = 30) {
+  async list(
+    q: string,
+    status: AvailableStatus,
+    isAll: boolean,
+    page = 1,
+    limit = 30,
+  ) {
     const where: Prisma.RoleWhereInput = {};
     if (q) {
       where.name = { contains: q };
@@ -50,11 +57,10 @@ export class RoleService {
     if (status) {
       where.status = status;
     }
-    const total = await this.prisma.role.count({ where });
+    const total = isAll ? 0 : await this.prisma.role.count({ where });
     const list = await this.prisma.role.findMany({
       where,
-      skip: (page - 1) * limit,
-      take: Number(limit),
+      ...pageOptions(page, limit, isAll),
     });
     return {
       total,
