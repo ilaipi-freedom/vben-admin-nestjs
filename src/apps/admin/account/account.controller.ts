@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 import { CurrentUser } from 'src/common/helpers/current-user';
@@ -18,5 +18,10 @@ export class AccountController {
   @Get('/permCode')
   async permCode(@CurrentUser() user: AuthSession) {
     return this.service.getPermCode(user);
+  }
+
+  @Get('/permCode/:roleId')
+  async permCodeByRole(@Param('roleId') roleId: string) {
+    return this.service.getPermCodeByRole(roleId);
   }
 }

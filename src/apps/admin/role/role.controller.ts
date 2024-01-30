@@ -113,4 +113,16 @@ export class RoleController {
   async getById(@Param('id') id: string) {
     return this.roleService.getById(id);
   }
+
+  @Put('updatePerm/:id')
+  @ApiParam({
+    name: 'id',
+    description: '角色id',
+  })
+  async updatePerm(
+    @Param('id') id: string,
+    @Body() payload: { perm: string[] },
+  ) {
+    return this.roleService.updatePerm(id, payload.perm);
+  }
 }

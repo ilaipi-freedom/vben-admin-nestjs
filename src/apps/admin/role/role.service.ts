@@ -76,4 +76,30 @@ export class RoleService {
       where: { id },
     });
   }
+  async updatePerm(id: string, perm: string[]) {
+    return await this.prisma.$transaction(async (prisma: PrismaService) => {
+      await prisma.roleMenuConfig.deleteMany({
+        where: {
+          roleId: id,
+        },
+      });
+      if (perm?.length) {
+        const sysMenus = await this.prisma.sysMenu.findMany({
+          where: {
+            id: { in: perm },
+            permission: { not: null },
+          },
+          select: {
+            permission: true,
+          },
+        });
+        await prisma.roleMenuConfig.createMany({
+          data: sysMenus.map(({ permission }) => ({
+            sysMenuPerm: permission,
+            roleId: id,
+          })),
+        });
+      }
+    });
+  }
 }

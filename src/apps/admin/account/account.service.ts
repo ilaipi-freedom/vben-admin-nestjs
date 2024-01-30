@@ -65,4 +65,25 @@ export class AccountService {
     });
     return map(list, 'sysMenu.permission');
   }
+
+  async getPermCodeByRole(roleId: string) {
+    const list = await this.prisma.roleMenuConfig.findMany({
+      where: {
+        roleId: roleId,
+        sysMenu: {
+          type: { not: SysMenuType.dir },
+        },
+      },
+      include: {
+        sysMenu: {
+          select: {
+            id: true,
+            permission: true,
+            type: true,
+          },
+        },
+      },
+    });
+    return map(list, 'sysMenu.id');
+  }
 }
