@@ -70,9 +70,6 @@ export class AccountService {
     const list = await this.prisma.roleMenuConfig.findMany({
       where: {
         roleId: roleId,
-        sysMenu: {
-          type: { not: SysMenuType.dir },
-        },
       },
       include: {
         sysMenu: {

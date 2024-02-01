@@ -25,22 +25,9 @@ export class RoleService {
   }
 
   async update(id: string, data: Prisma.RoleCreateInput) {
-    const { menu, ...others } = JSON.parse(JSON.stringify(data));
-    return await this.prisma.$transaction(async (prisma: PrismaService) => {
-      if (menu) {
-        await prisma.roleMenuConfig.deleteMany({
-          where: {
-            roleId: id,
-          },
-        });
-        await prisma.roleMenuConfig.createMany({
-          data: menu.map((sysMenuId: string) => ({ sysMenuId, roleId: id })),
-        });
-      }
-      return prisma.role.update({
-        where: { id },
-        data: others,
-      });
+    return this.prisma.role.update({
+      where: { id },
+      data,
     });
   }
   async list(
