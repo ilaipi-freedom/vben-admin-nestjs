@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
@@ -32,7 +33,7 @@ export class SysDictController {
   async createSysDict(@Body() payload: Prisma.SysDictCreateInput) {
     return this.sysDictService.create(payload);
   }
-  @Put()
+  @Put(':id')
   @ApiParam({
     name: 'id',
     description: '更新',
@@ -44,7 +45,7 @@ export class SysDictController {
     @Param('id') id: number,
     @Body() payload: Prisma.SysDictCreateInput,
   ) {
-    return this.sysDictService.update(id, payload);
+    return this.sysDictService.update(Number(id), payload);
   }
 
   @Get()
@@ -66,10 +67,14 @@ export class SysDictController {
     type: Number,
     description: '每页数量',
   })
-  async list(q: string, page = 1, limit = 30) {
+  async list(
+    @Query('q') q: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 30,
+  ) {
     return this.sysDictService.list(q, page, limit);
   }
-  @Delete()
+  @Delete(':id')
   @ApiParam({
     name: 'id',
     description: '删除',
